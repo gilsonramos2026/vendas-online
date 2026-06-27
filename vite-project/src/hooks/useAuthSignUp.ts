@@ -6,7 +6,7 @@ export function useAuthSignUp() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   
-  // Estado profissional para renderizar erros na tela sem usar alerts
+  // Estado profissional para renderizar erros em português na tela de vidro
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Estados dos inputs isolados no hook
@@ -24,21 +24,22 @@ export function useAuthSignUp() {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMessage(null); // Reseta erros antigos
+    setErrorMessage(null); // Reseta erros antigos antes de tentar
 
+    // TRADUÇÃO: Alertas internos do React
     if (!name || !email || !phoneNumber || !password || !confirmPassword) {
-      return setErrorMessage("Please, fill in all fields.");
+      return setErrorMessage("Por favor, preencha todos os campos do formulário.");
     }
 
     if (password !== confirmPassword) {
-      return setErrorMessage("Passwords do not match.");
+      return setErrorMessage("As senhas digitadas não coincidem. Digite novamente.");
     }
 
     setLoading(true);
     try {
       const formattedPhone = getFormattedPhone(phoneNumber);
       
-      // Envia a requisição limpa para o Spring Boot
+      // Faz o envio real para as rotas do Spring Boot
       await api.post("/auth/signup", { 
         name, 
         email, 
@@ -46,15 +47,17 @@ export function useAuthSignUp() {
         password 
       });
       
-      alert("Account created successfully! Check your welcome email.");
-      navigate("/"); // Redireciona para o Login
+      // Mensagem informativa de sucesso
+      alert("Conta criada com sucesso! Verifique sua caixa de entrada para o e-mail de boas-vindas.");
+      navigate("/"); // Manda de volta para o login
     } catch (error: any) {
-      // Captura a validação estruturada do seu GlobalExceptionHandler do Java
+      // Captura o mapa de erros de tamanho/formato que configuramos no Java
       if (error.response?.data?.validationErrors) {
         const errorMsgs = Object.values(error.response.data.validationErrors).join(" | ");
         setErrorMessage(errorMsgs);
       } else {
-        setErrorMessage(error.response?.data?.message || "Email or phone number already registered.");
+        // TRADUÇÃO: Erro de conflito caso o registro já exista no Postgres
+        setErrorMessage(error.response?.data?.message || "E-mail ou número de celular já cadastrados no sistema.");
       }
     } finally {
       setLoading(false);
