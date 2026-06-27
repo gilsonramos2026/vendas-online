@@ -8,6 +8,7 @@ import com.vendasonline.backend.repository.*;
 import com.vendasonline.backend.service.AuthService;
 import com.vendasonline.backend.service.EmailService; // Importação do EmailService
 import com.vendasonline.backend.service.JwtService;
+import com.vendasonline.backend.service.SmsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final EmailService emailService; // Injetado o novo serviço de email
+    private final SmsService smsService;
 
     @Override
     @Transactional
@@ -95,7 +97,9 @@ public class AuthServiceImpl implements AuthService {
 
         // TODO: Chamar API externa (Twilio, Zapi, etc.) para enviar o SMS/WhatsApp real
         saveNotificationLog(user, "SMS_OTP_TOKEN", request.phoneNumber());
-        System.out.println("TOKEN GERADO PARA CELULAR: " + generatedToken); // Log temporario de teste
+        // Substitua o comentário e o System.out.println por isto:
+        smsService.sendVerificationToken(request.phoneNumber(), generatedToken);
+
     }
 
     @Override
