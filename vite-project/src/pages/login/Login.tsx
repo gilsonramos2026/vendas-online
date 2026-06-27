@@ -59,14 +59,24 @@ export function Login() {
     }
   };
 
-  // ABA 2 - PASSO 1: Solicitar Código SMS para o Celular
+    // ABA 2 - PASSO 1: Solicitar Código SMS para o Celular (Formatado)
   const handleSendToken = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!phoneNumber) return alert("Digite o número de celular completo!");
 
     setLoading(true);
     try {
-      await api.post("/auth/phone/send-token", { phoneNumber });
+      // 1. Remove parênteses, espaços e hifens da máscara
+      const cleanNumber = phoneNumber.replace(/\D/g, "");
+
+      // 2. Garante o prefixo +55 exigido pelo regex de validação do Backend
+      const formattedForBackend = cleanNumber.startsWith("55") 
+        ? `+${cleanNumber}` 
+        : `+55${cleanNumber}`;
+
+      // 3. Envia o número limpo no corpo da requisição
+      await api.post("/auth/phone/send-token", { phoneNumber: formattedForBackend });
+      
       setIsTokenSent(true);
       alert("Código de verificação enviado com sucesso!");
     } catch (error: any) {
@@ -76,14 +86,24 @@ export function Login() {
     }
   };
 
-  // ABA 2 - PASSO 2: Enviar Código de 6 Dígitos e Logar
+  // ABA 2 - PASSO 2: Enviar Código de 6 Dígitos e Logar (Formatado)
   const handleTokenLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!smsCode) return alert("Por favor, insira o token recebido.");
 
     setLoading(true);
     try {
-      const response = await api.post("/auth/login/phone-token", { phoneNumber, code: smsCode });
+      // Aplica a mesma limpeza para bater com o número enviado no passo anterior
+      const cleanNumber = phoneNumber.replace(/\D/g, "");
+      const formattedForBackend = cleanNumber.startsWith("55") 
+        ? `+${cleanNumber}` 
+        : `+55${cleanNumber}`;
+
+      const response = await api.post("/auth/login/phone-token", { 
+        phoneNumber: formattedForBackend, 
+        code: smsCode 
+      });
+      
       saveSessionAndRedirect(response.data);
     } catch (error: any) {
       alert(error.response?.data?.message || "Código incorreto ou já expirado.");
@@ -92,16 +112,23 @@ export function Login() {
     }
   };
 
+
   return (
     <section className="min-h-screen w-full flex items-center justify-center bg-[url('/bg.jpg')] bg-cover bg-center bg-no-repeat p-4 md:p-8 bg-bg-primary transition-colors duration-300 relative">
       
       <button
-        type="button"
-        onClick={toggleTheme}
-        className="absolute top-4 right-4 p-3 rounded-xl bg-amber-400 text-zinc-950 font-bold shadow-lg hover:bg-amber-300 transition-all cursor-pointer flex items-center gap-2 text-xs sm:text-sm z-50"
-      >
-        {theme === "light" ? "🌙 Dark Mode" : "☀️ Light Mode"}
-      </button>
+  type="button"
+  onClick={toggleTheme}
+  className="absolute top-4 right-4 p-2.5 md:p-3 rounded-lg md:rounded-xl bg-amber-400 text-zinc-950 font-bold shadow-lg hover:bg-amber-300 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2 text-xs sm:text-sm z-50 animate-fade-in"
+>
+  {/* O emoji fica visível em todos os tamanhos */}
+  <span>{theme === "light" ? "🌙" : "☀️"}</span>
+  
+  {/* O texto some em celulares (hidden) e só aparece de telas médias para cima (md:block) */}
+  <span className="hidden md:block">
+    {theme === "light" ? "Dark Mode" : "Light Mode"}
+  </span>
+</button>
 
       <section className="w-11/12 sm:w-4/5 lg:w-full lg:max-w-xl min-h-[60vh] flex flex-col items-center justify-center p-6 md:p-10 backdrop-blur-md border border-white/10 dark:border-zinc-800/50 rounded-3xl shadow-[5px_5px_42px_0px_rgba(156,163,175,0.15)] bg-card-bg text-text-primary transition-all duration-300">
         
