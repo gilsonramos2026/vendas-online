@@ -1,6 +1,7 @@
 import { Route } from "react-router-dom";
+import { Home } from "../pages/cliente/Home";
 
-const Home = () => <div className="text-white p-8">🛒 Home / Área de Compras do Cliente</div>;
+
 const Cart = () => <div className="text-white p-8">🛍️ Carrinho de Compras</div>;
 
 export const ClientRoutes = (
