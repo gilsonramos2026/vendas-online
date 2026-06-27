@@ -1,4 +1,4 @@
-package com.vendasonline.backend.service.impl;
+package com.vendasonline.backend.service.ipml;
 
 import com.vendasonline.backend.dto.*;
 import com.vendasonline.backend.exception.*;
@@ -6,7 +6,8 @@ import com.vendasonline.backend.mapper.UserMapper;
 import com.vendasonline.backend.model.*;
 import com.vendasonline.backend.repository.*;
 import com.vendasonline.backend.service.AuthService;
-import com.vendasonline.backend.service.JwtService; // Adicionada a importação do JwtService
+import com.vendasonline.backend.service.EmailService; // Importação do EmailService
+import com.vendasonline.backend.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,8 @@ public class AuthServiceImpl implements AuthService {
     private final NotificationLogRepository notificationLogRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService; // Injetado o motor de criptografia real do JWT
+    private final JwtService jwtService;
+    private final EmailService emailService; // Injetado o novo serviço de email
 
     @Override
     @Transactional
@@ -46,7 +48,10 @@ public class AuthServiceImpl implements AuthService {
         // 4. Salva no banco de dados
         User savedUser = userRepository.save(user);
 
-        // 5. TODO: Chamar o servico assincrono para enviar o E-mail de Boas-Vindas automatico
+        // 5. Chamada assíncrona real para enviar o E-mail de Boas-Vindas automático
+        emailService.sendWelcomeEmail(savedUser.getEmail(), savedUser.getName());
+
+        // Salva o histórico de auditoria no banco de dados
         saveNotificationLog(savedUser, "EMAIL_WELCOME", savedUser.getEmail());
 
         return userMapper.toResponse(savedUser);
@@ -64,7 +69,7 @@ public class AuthServiceImpl implements AuthService {
             throw new InvalidTokenException("Invalid identifier or password.");
         }
 
-        // CORREÇÃO: Emite o token JWT real assinado com os dados do usuário do banco
+        // Emite o token JWT real assinado com os dados do usuário do banco
         return jwtService.generateToken(user);
     }
 
@@ -114,7 +119,7 @@ public class AuthServiceImpl implements AuthService {
         activeToken.setUsed(true);
         phoneTokenRepository.save(activeToken);
 
-        // CORREÇÃO: Emite o token JWT real para o login sem senha via celular
+        // Emite o token JWT real para o login sem senha via celular
         return jwtService.generateToken(user);
     }
 
