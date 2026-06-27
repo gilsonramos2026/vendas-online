@@ -1,51 +1,25 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { InputComponent } from "../../components/ImputComponent";
 import { Button } from "../../components/Button";
-import { api } from "../../services"; // Importação do serviço da API
+import { useAuthSignUp } from "../../hooks/useAuthSignUp"; // Importa o novo hook
 
 export function SignUp() {
-  const navigate = useNavigate(); // Inicializa a navegação entre telas
-  const [loading, setLoading] = useState(false); // Estado para controlar o clique duplo no botão
-
-  // Estados dos Inputs mapeados exatamente com o record SignUpRequest do Spring Boot
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault(); // Impede a página de recarregar sozinho
-
-    // Validação básica no front-end antes de disparar o servidor
-    if (!name || !email || !phoneNumber || !password || !confirmPassword) {
-      return alert("Por favor, preencha todos os campos.");
-    }
-
-    if (password !== confirmPassword) {
-      return alert("As senhas digitadas não coincidem!");
-    }
-
-    setLoading(true);
-    try {
-      // Faz a requisição POST real enviando o corpo limpo para o Spring Boot
-      await api.post("/auth/signup", { name, email, phoneNumber, password });
-      
-      alert("Conta criada com sucesso! Verifique seu e-mail de boas-vindas.");
-      navigate("/"); // Redireciona o usuário para a tela de Login
-    } catch (error: any) {
-      // Captura o mapa de erros que configuramos no GlobalExceptionHandler do Java
-      if (error.response?.data?.validationErrors) {
-        const errorMsgs = Object.values(error.response.data.validationErrors).join("\n");
-        alert(`Erro de validação:\n${errorMsgs}`);
-      } else {
-        alert(error.response?.data?.message || "E-mail ou celular já cadastrados no sistema.");
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Destrutura todos os estados e comportamentos isolados
+  const {
+    loading,
+    errorMessage,
+    name,
+    setName,
+    email,
+    setEmail,
+    phoneNumber,
+    setPhoneNumber,
+    password,
+    setPassword,
+    confirmPassword,
+    setConfirmPassword,
+    handleSignUp
+  } = useAuthSignUp();
 
   return (
     <section className="min-h-screen w-full flex items-center justify-center bg-[url('/bg.jpg')] bg-cover bg-center bg-no-repeat p-4 md:p-8 bg-bg-primary transition-colors duration-300">
@@ -61,7 +35,13 @@ export function SignUp() {
           Sign Up
         </h2>
 
-        {/* Mudado para onSubmit no formulário para capturar a tecla Enter do teclado */}
+        {/* Bloco de Erro em formato de Vidro Vermelho Fluido integrado ao tema */}
+        {errorMessage && (
+          <div className="w-full max-w-md p-3 mb-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm font-semibold text-center backdrop-blur-md animate-fade-in">
+            ⚠️ {errorMessage}
+          </div>
+        )}
+
         <form onSubmit={handleSignUp} className="w-full max-w-md flex flex-col gap-4">
           <InputComponent
             label="Nome Completo"
@@ -80,7 +60,7 @@ export function SignUp() {
 
           <InputComponent
             label="Celular"
-            placeholder="+5511999999999"
+            placeholder="(11) 99999-9999"
             type="tel"
             value={phoneNumber}
             onChange={setPhoneNumber}
