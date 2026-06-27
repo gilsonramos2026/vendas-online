@@ -14,7 +14,7 @@ export function Login() {
     isTokenSent,
     setIsTokenSent,
     loading,
-    errorMessage, // Adicionado para renderizar na tela
+    errorMessage, 
     identifier,
     setIdentifier,
     password,
@@ -31,6 +31,30 @@ export function Login() {
   return (
     <section className="min-h-screen w-full flex items-center justify-center bg-[url('/bg.jpg')] bg-cover bg-center bg-no-repeat p-4 md:p-8 bg-bg-primary transition-colors duration-300 relative">
       
+      {/* =================================================================== */}
+      {/* LOADER GERAL DE TELA CHEIA (OVERLAY GLASSMORPHISM) */}
+      {/* =================================================================== */}
+      {loading && (
+        <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-zinc-950/40 backdrop-blur-md transition-all duration-300">
+          <div className="flex flex-col items-center gap-4 p-6 rounded-3xl bg-zinc-900/20 border border-white/5 shadow-2xl backdrop-blur-xl animate-fade-in">
+            {/* Spinner Gigante Animado */}
+            <svg 
+              className="animate-spin h-14 w-14 text-amber-500 dark:text-amber-400" 
+              xmlns="http://w3.org" 
+              fill="none" 
+              viewBox="0 0 24 24"
+            >
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+            </svg>
+            {/* Texto de Status */}
+            <span className="text-amber-500 dark:text-amber-400 font-semibold tracking-widest text-sm uppercase animate-pulse">
+              Processando Autenticação...
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Botão flutuante minimalista de Alternância de Tema */}
       <button
         type="button"
@@ -79,19 +103,19 @@ export function Login() {
               <InputComponent label="Email ou Celular" placeholder="example@email.com" type="text" value={identifier} onChange={setIdentifier} />
               <InputComponent label="Senha" placeholder="Senha" type="password" value={password} onChange={setPassword} />
               <div className="text-right"><Link to="/esqueci-senha" className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 hover:text-white transition-colors">Esqueci minha senha?</Link></div>
-              <Button text={loading ? "Entrando..." : "Entrar"} type="submit" />
+              <Button text="Entrar" type="submit" />
             </>
           ) : (
             <>
               {!isTokenSent ? (
                 <>
                   <InputComponent label="Número de Celular" placeholder="(11) 99999-9999" type="tel" value={phoneNumber} onChange={setPhoneNumber} />
-                  <Button text={loading ? "Enviando..." : "Enviar código de verificação"} type="submit" />
+                  <Button text="Enviar código de verificação" type="submit" />
                 </>
               ) : (
                 <>
                   <InputComponent label="Verificar código (Token)" placeholder="Digite os seis dígitos" type="text" value={smsCode} onChange={setSmsCode} />
-                  <Button text={loading ? "Verificando..." : "Verificar e entrar"} type="submit" />
+                  <Button text="Verificar e entrar" type="submit" />
                   <button type="button" onClick={() => setIsTokenSent(false)} className="text-xs text-zinc-500 dark:text-zinc-400 hover:text-white transition-colors mt-1 cursor-pointer">Mudar número de celular</button>
                 </>
               )}
