@@ -1,5 +1,5 @@
 import { Route } from "react-router-dom";
-import { Home } from "../pages/cliente/Home";
+
 
 
 const Cart = () => <div className="text-white p-8">🛍️ Carrinho de Compras</div>;
