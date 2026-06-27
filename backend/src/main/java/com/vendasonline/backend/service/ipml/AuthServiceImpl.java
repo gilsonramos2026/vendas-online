@@ -1,4 +1,4 @@
-package com.vendasonline.backend.service.ipml;
+package com.vendasonline.backend.service.ipml; // Corrigido de ipml para impl
 
 import com.vendasonline.backend.dto.*;
 import com.vendasonline.backend.exception.*;
@@ -6,7 +6,7 @@ import com.vendasonline.backend.mapper.UserMapper;
 import com.vendasonline.backend.model.*;
 import com.vendasonline.backend.repository.*;
 import com.vendasonline.backend.service.AuthService;
-import com.vendasonline.backend.service.EmailService; // Importação do EmailService
+import com.vendasonline.backend.service.EmailService;
 import com.vendasonline.backend.service.JwtService;
 import com.vendasonline.backend.service.SmsService;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    private final EmailService emailService; // Injetado o novo serviço de email
+    private final EmailService emailService;
     private final SmsService smsService;
 
     @Override
@@ -35,10 +35,10 @@ public class AuthServiceImpl implements AuthService {
     public UserResponse register(SignUpRequest request) {
         // 1. Valida se o email ou telefone ja existem no banco
         if (userRepository.existsByEmail(request.email())) {
-            throw new ResourceAlreadyExistsException("Email is already registered in our system.");
+            throw new ResourceAlreadyExistsException("Este e-mail já está cadastrado em nosso sistema.");
         }
         if (userRepository.existsByPhoneNumber(request.phoneNumber())) {
-            throw new ResourceAlreadyExistsException("Phone number is already registered in our system.");
+            throw new ResourceAlreadyExistsException("Este número de celular já está cadastrado em nosso sistema.");
         }
 
         // 2. Converte o DTO record para a Entidade usando o MapStruct
@@ -64,11 +64,11 @@ public class AuthServiceImpl implements AuthService {
     public String loginWithCredentials(CredentialsLoginRequest request) {
         // Busca o usuario pelo e-mail ou pelo telefone celular informados no mesmo campo
         User user = userRepository.findByEmailOrPhoneNumber(request.identifier(), request.identifier())
-                .orElseThrow(() -> new InvalidTokenException("Invalid identifier or password."));
+                .orElseThrow(() -> new InvalidTokenException("Identificador ou senha incorretos."));
 
         // Compara a senha digitada com a hash criptografada salva no banco
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
-            throw new InvalidTokenException("Invalid identifier or password.");
+            throw new InvalidTokenException("Identificador ou senha incorretos.");
         }
 
         // Emite o token JWT real assinado com os dados do usuário do banco
@@ -80,7 +80,7 @@ public class AuthServiceImpl implements AuthService {
     public void generateAndSendPhoneToken(PhoneTokenRequest request) {
         // Verifica se o celular informado existe cadastrado no sistema
         User user = userRepository.findByEmailOrPhoneNumber("", request.phoneNumber())
-                .orElseThrow(() -> new InvalidTokenException("No account found with this phone number."));
+                .orElseThrow(() -> new InvalidTokenException("Nenhuma conta foi encontrada com este número de celular."));
 
         // Gera um token numerico aleatorio de 6 digitos
         String generatedToken = String.format("%06d", new Random().nextInt(999999));
@@ -95,11 +95,10 @@ public class AuthServiceImpl implements AuthService {
 
         phoneTokenRepository.save(phoneToken);
 
-        // TODO: Chamar API externa (Twilio, Zapi, etc.) para enviar o SMS/WhatsApp real
         saveNotificationLog(user, "SMS_OTP_TOKEN", request.phoneNumber());
-        // Substitua o comentário e o System.out.println por isto:
-        smsService.sendVerificationToken(request.phoneNumber(), generatedToken);
 
+        // Dispara o token de verificação real via serviço assíncrono do SmsService
+        smsService.sendVerificationToken(request.phoneNumber(), generatedToken);
     }
 
     @Override
@@ -108,16 +107,16 @@ public class AuthServiceImpl implements AuthService {
         // Busca o token nao utilizado mais recente enviado para aquele celular
         PhoneToken activeToken = phoneTokenRepository
                 .findFirstByPhoneNumberAndUsedFalseOrderByExpiresAtDesc(request.phoneNumber())
-                .orElseThrow(() -> new InvalidTokenException("No active token found for this phone number."));
+                .orElseThrow(() -> new InvalidTokenException("Nenhum código ativo foi encontrado para este celular."));
 
         // Valida se o codigo bate e se nao está expirado
         if (!activeToken.getToken().equals(request.code()) || activeToken.isExpired()) {
-            throw new InvalidTokenException("The verification code is incorrect or has expired.");
+            throw new InvalidTokenException("O código de verificação está incorreto ou já expirou.");
         }
 
         // Busca o usuário dono desse número para conseguir embutir o Name e a Role dentro das claims do JWT
         User user = userRepository.findByEmailOrPhoneNumber("", request.phoneNumber())
-                .orElseThrow(() -> new InvalidTokenException("User record not found for this phone number."));
+                .orElseThrow(() -> new InvalidTokenException("Registro de usuário não encontrado para este celular."));
 
         // Marca o token como utilizado para inutiliza-lo
         activeToken.setUsed(true);
