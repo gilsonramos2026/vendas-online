@@ -1,7 +1,7 @@
 interface InputProps {
    label: string;
    placeholder:string;
-   type?:  'text'| 'email' | 'password'; 
+   type?:  'text'| 'email' | 'password' | 'tel'; 
 }
 export function InputComponent({label, placeholder, type = 'text'}: InputProps){
    return(

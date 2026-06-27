@@ -10,7 +10,7 @@ function App() {
         <Route path="/" element={<Login />} />
 
         {/* Você pode adicionar futuras rotas do sistema aqui abaixo */}
-        <Route path="/Criar-conta" element={<SignUp />} />
+        <Route path="/signup" element={<SignUp />} />
       </Routes>
     </BrowserRouter>
   );
