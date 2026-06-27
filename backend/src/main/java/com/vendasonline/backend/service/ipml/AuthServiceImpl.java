@@ -6,6 +6,7 @@ import com.vendasonline.backend.mapper.UserMapper;
 import com.vendasonline.backend.model.*;
 import com.vendasonline.backend.repository.*;
 import com.vendasonline.backend.service.AuthService;
+import com.vendasonline.backend.service.JwtService; // Adicionada a importação do JwtService
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class AuthServiceImpl implements AuthService {
     private final NotificationLogRepository notificationLogRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService; // Injetado o motor de criptografia real do JWT
 
     @Override
     @Transactional
@@ -62,8 +64,8 @@ public class AuthServiceImpl implements AuthService {
             throw new InvalidTokenException("Invalid identifier or password.");
         }
 
-        // TODO: Retornar a string gerada real pelo JwtService
-        return "JWT-TOKEN-GERADO-VIA-SENHA";
+        // CORREÇÃO: Emite o token JWT real assinado com os dados do usuário do banco
+        return jwtService.generateToken(user);
     }
 
     @Override
@@ -104,12 +106,16 @@ public class AuthServiceImpl implements AuthService {
             throw new InvalidTokenException("The verification code is incorrect or has expired.");
         }
 
+        // Busca o usuário dono desse número para conseguir embutir o Name e a Role dentro das claims do JWT
+        User user = userRepository.findByEmailOrPhoneNumber("", request.phoneNumber())
+                .orElseThrow(() -> new InvalidTokenException("User record not found for this phone number."));
+
         // Marca o token como utilizado para inutiliza-lo
         activeToken.setUsed(true);
         phoneTokenRepository.save(activeToken);
 
-        // TODO: Retornar a string gerada real pelo JwtService
-        return "JWT-TOKEN-GERADO-VIA-CELULAR";
+        // CORREÇÃO: Emite o token JWT real para o login sem senha via celular
+        return jwtService.generateToken(user);
     }
 
     // Metodo auxiliar para persistir o historico de mensagens enviadas
