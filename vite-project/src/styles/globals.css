@@ -22,3 +22,15 @@
   --text-primary: #f4f4f5;
   --card-bg: rgba(24, 24, 27, 0.25); /* Seu vidro escuro original */
 }
+
+/* Ajuste de cor para os Sliders do Swiper */
+.swiper-pagination-bullet-active {
+  background: var(--color-amber-500, #f59e0b) !important;
+}
+/* Customização das setas de navegação do carrossel de produtos */
+.swiper-button-next, .swiper-button-prev {
+  color: #f59e0b !important; /* Cor Amber */
+  transform: scale(0.6); /* Deixa as setas mais delicadas */
+}
+
+

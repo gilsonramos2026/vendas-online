@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import { InputComponent } from "../../components/ImputComponent";
 import { Button } from "../../components/Button";
-import { useAuthSignUp } from "../../hooks/useAuthSignUp"; // Importa o novo hook
+import { useAuthSignUp } from "../../hooks/useAuthSignUp";
 
 export function SignUp() {
-  // Destrutura todos os estados e comportamentos isolados
+  // Destrutura todos os estados e comportamentos isolados vindos do seu hook
   const {
     loading,
     errorMessage,
@@ -22,27 +22,32 @@ export function SignUp() {
   } = useAuthSignUp();
 
   return (
-    <section className="min-h-screen w-full flex items-center justify-center bg-[url('/bg.jpg')] bg-cover bg-center bg-no-repeat p-4 md:p-8 bg-bg-primary transition-colors duration-300">
+    // 🎨 Ajustado para se encaixar no grid do Layout sem quebrar as margens laterais
+    <div className="w-full min-h-[65vh] flex items-center justify-center py-6 sm:py-10">
       
-      <section className="w-11/12 sm:w-4/5 lg:w-full lg:max-w-xl min-h-[60vh] flex flex-col items-center justify-center p-6 md:p-10 backdrop-blur-md border border-white/10 dark:border-zinc-800/50 rounded-3xl shadow-[5px_5px_42px_0px_rgba(156,163,175,0.15)] bg-card-bg text-text-primary transition-all duration-300">
+      {/* 🔮 CARD DE VIDRO TRANSLÚCIDO: Totalmente integrado ao seu bg-card-bg v4 */}
+      <section className="w-full max-w-md flex flex-col items-center justify-center p-6 sm:p-10 border border-zinc-200/50 dark:border-zinc-800/50 rounded-3xl shadow-xl bg-card-bg backdrop-blur-md transition-all duration-300">
+        
+        {/* Logo da loja adaptável ao Modo Escuro */}
         <img
-          className="w-36 sm:w-44 md:w-48 h-auto drop-shadow-[0_4px_12px_rgba(0,0,0,0.3)] mb-4"
+          className="w-32 h-auto drop-shadow-md mb-2 dark:invert transition-all"
           src="/logo-store.png"
           alt="Logo"
         />
 
-        <h2 className="text-3xl sm:text-4xl font-bold text-amber-500 dark:text-amber-400 mb-6 md:mb-8">
-          Sign Up
+        <h2 className="text-2xl sm:text-3xl font-extrabold text-amber-500 dark:text-amber-400 mb-6 tracking-tight">
+          Crie sua Conta
         </h2>
 
         {/* Bloco de Erro em formato de Vidro Vermelho Fluido integrado ao tema */}
         {errorMessage && (
-          <div className="w-full max-w-md p-3 mb-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm font-semibold text-center backdrop-blur-md animate-fade-in">
+          <div className="w-full p-3 mb-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs sm:text-sm font-semibold text-center backdrop-blur-md">
             ⚠️ {errorMessage}
           </div>
         )}
 
-        <form onSubmit={handleSignUp} className="w-full max-w-md flex flex-col gap-4">
+        {/* Formulário de Cadastro estruturado em bloco único */}
+        <form onSubmit={handleSignUp} className="w-full flex flex-col gap-4">
           <InputComponent
             label="Nome Completo"
             placeholder="Digite seu nome completo"
@@ -51,8 +56,8 @@ export function SignUp() {
           />
 
           <InputComponent
-            label="Email"
-            placeholder="your-email@example.com"
+            label="E-mail"
+            placeholder="seu-email@exemplo.com"
             type="email"
             value={email}
             onChange={setEmail}
@@ -68,7 +73,7 @@ export function SignUp() {
 
           <InputComponent
             label="Senha"
-            placeholder="Digite uma senha"
+            placeholder="Crie uma senha forte"
             type="password"
             value={password}
             onChange={setPassword}
@@ -76,25 +81,26 @@ export function SignUp() {
           
           <InputComponent
             label="Confirmar Senha"
-            placeholder="Repita sua senha"
+            placeholder="Repita a senha criada"
             type="password"
             value={confirmPassword}
             onChange={setConfirmPassword}
           />
 
-          <Button text={loading ? "Criando conta..." : "Criar Conta"} type="submit" />
+          <Button text={loading ? "CRIANDO CONTA..." : "CRIAR CONTA →"} type="submit" />
         </form>
 
-        <p className="mt-6 text-sm text-zinc-600 dark:text-zinc-300 text-center gap-1 flex flex-wrap justify-center">
-          Já tem uma conta?
+        {/* 🔗 Rota de Link atualizada para apontar exatamente para o seu /login */}
+        <p className="mt-6 text-sm opacity-80 text-center gap-1 flex flex-wrap justify-center font-medium">
+          Já tem uma account?{" "}
           <Link
-            to="/"
-            className="text-amber-600 dark:text-amber-400 hover:text-amber-500 dark:hover:text-amber-300 font-semibold transition-colors"
+            to="/login"
+            className="text-amber-600 dark:text-amber-400 font-bold hover:underline transition-colors"
           >
             Entrar
           </Link>
         </p>
       </section>
-    </section>
+    </div>
   );
 }
