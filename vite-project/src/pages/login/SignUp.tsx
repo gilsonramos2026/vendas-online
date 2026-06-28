@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import { InputComponent } from "../../components/ImputComponent";
-import { Button } from "../../components/Button";
+import { InputComponent } from "../../components/ui/ImputComponent";
+import { Button } from "../../components/ui/Button";
 import { useAuthSignUp } from "../../hooks/useAuthSignUp";
 
 export function SignUp() {

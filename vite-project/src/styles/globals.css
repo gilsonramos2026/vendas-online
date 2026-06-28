@@ -1,36 +1,43 @@
 @import "tailwindcss";
 
+/* Força os estilos do carrossel na raiz do Vite */
+@import "swiper/css";
+@import "swiper/css/pagination";
+@import "swiper/css/navigation";
+
 @source "../**/*.{ts,tsx,html}";
 
-/* Configuração dos temas nativa do Tailwind v4 */
+/* Configuração de Design System Nativo do Tailwind v4 */
 @theme {
   --color-bg-primary: var(--bg-primary);
   --color-text-primary: var(--text-primary);
   --color-card-bg: var(--card-bg);
+  
+  /* Animações fluidas adicionais */
+  --animate-fade-in: fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* 1. MODO CLARO (PADRÃO) */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 🌙 CONFIGURAÇÕES DE TEMA DA NOVA IDENTIDADE VISUAL */
 :root {
-  --bg-primary: #f4f4f5;
-  --text-primary: #09090b;
-  --card-bg: rgba(255, 255, 255, 0.45); /* Vidro branco translúcido */
+  /* Modo Claro: Tons de areia, gelo e cinzas extremamente suaves */
+  --bg-primary: #f8f9fa;
+  --text-primary: #121214;
+  --card-bg: rgba(255, 255, 255, 0.70); /* Vidro jateado de alta opacidade */
 }
 
-/* 2. MODO ESCURO (GATILHO DA CLASSE JAVASCRIPT) */
 .dark {
-  --bg-primary: #09090b;
-  --text-primary: #f4f4f5;
-  --card-bg: rgba(24, 24, 27, 0.25); /* Seu vidro escuro original */
+  /* Modo Escuro: Preto absoluto de fundo com cartões cinza-grafite translúcidos */
+  --bg-primary: #0a0a0c;
+  --text-primary: #f3f4f6;
+  --card-bg: rgba(18, 18, 22, 0.45); /* Vidro escuro minimalista */
 }
 
-/* Ajuste de cor para os Sliders do Swiper */
+/* Customização global para os marcadores do Swiper */
 .swiper-pagination-bullet-active {
-  background: var(--color-amber-500, #f59e0b) !important;
+  background: #f59e0b !important; /* Mantém o Amber característico */
 }
-/* Customização das setas de navegação do carrossel de produtos */
-.swiper-button-next, .swiper-button-prev {
-  color: #f59e0b !important; /* Cor Amber */
-  transform: scale(0.6); /* Deixa as setas mais delicadas */
-}
-
-

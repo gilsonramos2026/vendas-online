@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useCountdown } from '../../hooks/useCountdown';
+import heroImage from '../../assets/jbl.png';
 
 export default function MusicPromoSection() {
   // Mantida a contagem regressiva atrelada ao final do ano atual (2026)
@@ -58,7 +59,7 @@ export default function MusicPromoSection() {
         {/* 🔹 2. AREA DA IMAGEM COM DROP SHADOW AVANÇADO */}
         <div className="flex-1 flex justify-center w-full">
           <img 
-            src="https://w7.pngwing.com/pngs/122/791/png-transparent-jbl-boombox-wireless-speaker-loudspeaker-boombox-electronics-sound-wireless.png" 
+            src={heroImage} 
             alt="Caixa de som Bluetooth Premium" 
             className="w-full max-w-sm sm:max-w-md object-contain drop-shadow-[0_20px_50px_rgba(245,158,11,0.15)] hover:scale-103 transition-transform duration-500"
           />

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay } from 'swiper/modules';
+import iphone from "../../assets/iphone.png";
 
 // Importação dos estilos obrigatórios do Swiper
 import 'swiper/css';
@@ -8,13 +9,12 @@ import 'swiper/css/pagination';
 
 export function HeroSection() {
   return (
-    // 🎨 CORREÇÃO: Adicionado lg:w-full, lg:flex-grow e min-w-0 para forçar o Swiper a ocupar o espaço em monitores grandes
     <div className="w-full lg:w-full lg:grow min-w-0 bg-zinc-950 text-white p-6 md:p-12 rounded-2xl overflow-hidden min-h-[320px] md:min-h-[380px] shadow-lg relative flex flex-col justify-center">
       <Swiper 
         modules={[Pagination, Autoplay]} 
         pagination={{ clickable: true }} 
         autoplay={{ delay: 4000, disableOnInteraction: false }}
-        className="w-full h-full" // 👈 Força largura total para o cálculo interno do Swiper v4
+        className="w-full h-full"
       >
         {[1, 2, 3].map((slide) => (
           <SwiperSlide key={slide}>
@@ -41,11 +41,19 @@ export function HeroSection() {
                 </Link>
               </div>
               
-              {/* Imagem do Produto */}
-              <div className="hidden sm:flex items-center justify-center flex-shrink-0">
-                <div className="w-40 h-40 md:w-56 md:h-56 bg-zinc-900 border border-zinc-800 rounded-3xl flex items-center justify-center text-sm font-bold text-zinc-500 shadow-inner">
-                  [ Imagem do iPhone ]
-                </div>
+              {/* 🔹 IMAGEM DO PRODUTO REFORMULADA */}
+              <div className="hidden sm:flex items-center justify-center flex-shrink-0 flex-1 h-full max-w-[280px] md:max-w-[340px]">
+                {/* 
+                  🔥 MUDANÇAS AQUI:
+                  - Removido o quadrado cinza de fundo.
+                  - Adicionada a classe 'animate-bounce' controlada ou efeito hover de escala.
+                  - Drop-shadow avançado cria uma iluminação branca/neon sutil por trás do aparelho no fundo preto.
+                */}
+                <img 
+                  src={iphone} 
+                  alt="iPhone 14 Pro" 
+                  className="w-full h-auto object-contain drop-shadow-[0_0_35px_rgba(255,255,255,0.18)] max-h-[220px] md:max-h-[280px] transition-transform duration-700 hover:scale-105 select-none"
+                />
               </div>
 
             </div>
